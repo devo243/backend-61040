@@ -22,7 +22,7 @@ export default class CommunitingConcept {
   }
 
   async create(author: ObjectId, title: string, description: string) {
-    this.assertCommunityNotExists(title);
+    await this.assertCommunityNotExists(title);
 
     const newItemsArray = <ObjectId[]>[];
     const newMembersArray = <ObjectId[]>[author];

@@ -80,8 +80,76 @@ const operations: Operation[] = [
     method: "DELETE",
     fields: { id: "input" },
   },
+  {
+    name: "Create Community",
+    endpoint: "/api/communities",
+    method: "POST",
+    fields: { title: "input", description: "input" },
+  },
+  {
+    name: "Delete Community",
+    endpoint: "/api/communities/:id",
+    method: "DELETE",
+    fields: { id: "input" },
+  },
+  {
+    name: "Find Community (empty for all)",
+    endpoint: "/api/communities/",
+    method: "GET",
+    fields: { title: "input" },
+  },
+  {
+    name: "Join Community",
+    endpoint: "/api/communities/:id/join",
+    method: "PATCH",
+    fields: { id: "input" },
+  },
+  {
+    name: "Leave Community",
+    endpoint: "/api/communities/:id/leave",
+    method: "PATCH",
+    fields: { id: "input" },
+  },
+  {
+    name: "Get Community items",
+    endpoint: "/api/communities/:id/items",
+    method: "GET",
+    fields: { id: "input" },
+  },
+  {
+    name: "Add Community items",
+    endpoint: "/api/communities/:id/items/add/:itemID",
+    method: "PATCH",
+    fields: { id: "input", itemID: "input" },
+  },
+  {
+    name: "Delete Community items",
+    endpoint: "/api/communities/:id/items/delete/:itemID",
+    method: "PATCH",
+    fields: { id: "input", itemID: "input" },
+  },
+  {
+    name: "Favorite Post",
+    endpoint: "/api/posts/:id/favorites",
+    method: "POST",
+    fields: { id: "input" },
+  },
+  {
+    name: "Unfavorite Post",
+    endpoint: "/api/posts/:id/favorites",
+    method: "DELETE",
+    fields: { id: "input" },
+  },
+  {
+    name: "Get number of Favorites in Post",
+    endpoint: "/api/posts/:id/favorites",
+    method: "GET",
+    fields: { id: "input" },
+  },
+
   //
   // ...
+  //
   //
 ];
 

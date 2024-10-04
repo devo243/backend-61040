@@ -50,7 +50,7 @@ export default class Responses {
 
   static async communities(communities: CommunityDoc[]) {
     const authors = await Authing.idsToUsernames(communities.map((community) => community.author));
-    return communities.map((communities, i) => ({ ...this.community, author: authors[i] }));
+    return communities.map((community, i) => ({ ...community, author: authors[i] }));
   }
 }
 

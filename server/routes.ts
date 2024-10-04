@@ -163,17 +163,15 @@ class Routes {
   }
 
   @Router.get("/communities")
-  async getCommunities() {
-    const communities = await Communiting.getCommunities();
+  async getCommunities(title?: string) {
+    if (title) {
+      const community = await Communiting.getCommunityByTitle(title);
+      return Responses.community(community);
+    } else {
+      const communities = await Communiting.getCommunities();
 
-    return Responses.communities(communities);
-  }
-
-  @Router.get("/communities/:title")
-  async getCommunityByTitle(title: string) {
-    const community = await Communiting.getCommunityByTitle(title);
-
-    return Responses.community(community);
+      return Responses.communities(communities);
+    }
   }
 
   @Router.delete("/communities/:id")
@@ -184,14 +182,14 @@ class Routes {
     return await Communiting.delete(oid);
   }
 
-  @Router.patch("/communities/join/:id")
+  @Router.patch("/communities/:id/join")
   async joinCommunity(session: SessionDoc, id: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
     return await Communiting.join(user, oid);
   }
 
-  @Router.patch("/communities/leave/:id")
+  @Router.patch("/communities/:id/leave")
   async leaveCommunity(session: SessionDoc, id: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
