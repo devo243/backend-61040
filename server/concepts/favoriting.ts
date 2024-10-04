@@ -8,6 +8,9 @@ export interface FavoriteDoc extends BaseDoc {
   item: ObjectId;
 }
 
+/**
+ * concept: Favoriting [User, Item]
+ */
 export default class FavoritingConcept {
   public readonly favorites: DocCollection<FavoriteDoc>;
 

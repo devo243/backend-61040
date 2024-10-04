@@ -11,6 +11,9 @@ export interface CommunityDoc extends BaseDoc {
   members: ObjectId[];
 }
 
+/**
+ * concept: Communiting [User, Item]
+ */
 export default class CommunitingConcept {
   public readonly communities: DocCollection<CommunityDoc>;
 
@@ -19,6 +22,8 @@ export default class CommunitingConcept {
   }
 
   async create(author: ObjectId, title: string, description: string) {
+    this.assertCommunityNotExists(title);
+
     const newItemsArray = <ObjectId[]>[];
     const newMembersArray = <ObjectId[]>[author];
     const _id = await this.communities.createOne({ author, title, description, items: newItemsArray, members: newMembersArray });
@@ -35,7 +40,7 @@ export default class CommunitingConcept {
     return await this.communities.readOne({ _id });
   }
 
-  async getCommunities(_id: ObjectId) {
+  async getCommunities() {
     return await this.communities.readMany({}, { sort: { _id: -1 } });
   }
 
@@ -184,6 +189,14 @@ export default class CommunitingConcept {
 
     if (this.checkObjectIdInArray(item, items)) {
       throw new CommunityUserNoMatchError(item, _id);
+    }
+  }
+
+  async assertCommunityNotExists(title: string) {
+    const community = await this.getCommunityByTitle(title);
+
+    if (community) {
+      throw new NotAllowedError("Community already exists");
     }
   }
 }

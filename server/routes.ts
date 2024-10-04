@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Authing, Friending, Posting, Sessioning } from "./app";
+import { Authing, Communiting, Favoriting, Friending, Posting, Sessioning } from "./app";
 import { PostOptions } from "./concepts/posting";
 import { SessionDoc } from "./concepts/sessioning";
 import Responses from "./responses";
@@ -152,6 +152,108 @@ class Routes {
     const fromOid = (await Authing.getUserByUsername(from))._id;
     return await Friending.rejectRequest(fromOid, user);
   }
+
+  // Communiting
+
+  @Router.post("/communities")
+  async createCommunity(session: SessionDoc, title: string, description: string) {
+    const user = Sessioning.getUser(session);
+    const created = await Communiting.create(user, title, description);
+    return { msg: created.msg, community: await Responses.community(created.community) };
+  }
+
+  @Router.get("/communities")
+  async getCommunities() {
+    const communities = await Communiting.getCommunities();
+
+    return Responses.communities(communities);
+  }
+
+  @Router.get("/communities/:title")
+  async getCommunityByTitle(title: string) {
+    const community = await Communiting.getCommunityByTitle(title);
+
+    return Responses.community(community);
+  }
+
+  @Router.delete("/communities/:id")
+  async deleteCommunity(session: SessionDoc, id: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
+    await Communiting.assertAuthorIsUser(oid, user);
+    return await Communiting.delete(oid);
+  }
+
+  @Router.patch("/communities/join/:id")
+  async joinCommunity(session: SessionDoc, id: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
+    return await Communiting.join(user, oid);
+  }
+
+  @Router.patch("/communities/leave/:id")
+  async leaveCommunity(session: SessionDoc, id: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
+    return await Communiting.leave(user, oid);
+  }
+
+  @Router.get("/communities/:id/items")
+  async getCommunityItems(id: string) {
+    const oid = new ObjectId(id);
+
+    return await Communiting.getItems(oid);
+  }
+
+  @Router.patch("/communities/:id/items/add/:itemID")
+  async addCommunityItem(id: string, itemID: string) {
+    const communityObjectID = new ObjectId(id);
+    const itemObjectID = new ObjectId(itemID);
+
+    return await Communiting.addItem(itemObjectID, communityObjectID);
+  }
+
+  @Router.patch("/communities/:id/items/delete/:itemID")
+  async deleteCommunityItem(id: string, itemID: string) {
+    const communityObjectID = new ObjectId(id);
+    const itemObjectID = new ObjectId(itemID);
+
+    return await Communiting.deleteItem(itemObjectID, communityObjectID);
+  }
+
+  // Favoriting
+  @Router.post("/posts/:id/favorites")
+  async favoriteItem(session: SessionDoc, id: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
+
+    return await Favoriting.favorite(user, oid);
+  }
+
+  @Router.delete("/posts/:id/favorites")
+  async unfavoriteItem(session: SessionDoc, id: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
+
+    return await Favoriting.unfavorite(user, oid);
+  }
+
+  @Router.get("/posts/:id/favorites")
+  async getNumFavorites(id: string) {
+    const oid = new ObjectId(id);
+
+    return await Favoriting.getNumFavorites(oid);
+  }
+
+  // Featuring
+  @Router.get("/posts/featured")
+  async getFeatured() {}
+
+  @Router.post("/posts/featured")
+  async addFeatured() {}
+
+  @Router.delete("/posts/featured")
+  async deleteFeatured() {}
 }
 
 /** The web app. */

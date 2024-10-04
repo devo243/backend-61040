@@ -1,4 +1,5 @@
 import { Authing } from "./app";
+import { CommunityDoc } from "./concepts/communiting";
 import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError } from "./concepts/friending";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/posting";
 import { Router } from "./framework/router";
@@ -36,6 +37,20 @@ export default class Responses {
     const to = requests.map((request) => request.to);
     const usernames = await Authing.idsToUsernames(from.concat(to));
     return requests.map((request, i) => ({ ...request, from: usernames[i], to: usernames[i + requests.length] }));
+  }
+
+  static async community(community: CommunityDoc | null) {
+    if (!community) {
+      return community;
+    }
+
+    const author = await Authing.getUserById(community.author);
+    return { ...community, author: author.username };
+  }
+
+  static async communities(communities: CommunityDoc[]) {
+    const authors = await Authing.idsToUsernames(communities.map((community) => community.author));
+    return communities.map((communities, i) => ({ ...this.community, author: authors[i] }));
   }
 }
 
