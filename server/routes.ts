@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Authing, Communiting, Favoriting, Friending, Posting, Sessioning } from "./app";
+import { Authing, Communiting, Favoriting, Feeding, Friending, Posting, Sessioning } from "./app";
 import { PostOptions } from "./concepts/posting";
 import { SessionDoc } from "./concepts/sessioning";
 import Responses from "./responses";
@@ -200,23 +200,29 @@ class Routes {
   async getCommunityItems(id: string) {
     const oid = new ObjectId(id);
 
-    return await Communiting.getItems(oid);
+    await Communiting.assertCommunityExists(oid);
+
+    return await Feeding.getItems(oid);
   }
 
-  @Router.patch("/communities/:id/items/add/:itemID")
+  @Router.post("/communities/:id/items/")
   async addCommunityItem(id: string, itemID: string) {
     const communityObjectID = new ObjectId(id);
     const itemObjectID = new ObjectId(itemID);
 
-    return await Communiting.addItem(itemObjectID, communityObjectID);
+    await Communiting.assertCommunityExists(communityObjectID);
+
+    return await Feeding.addItem(itemObjectID, communityObjectID);
   }
 
-  @Router.patch("/communities/:id/items/delete/:itemID")
+  @Router.delete("/communities/:id/items/:itemID")
   async deleteCommunityItem(id: string, itemID: string) {
     const communityObjectID = new ObjectId(id);
     const itemObjectID = new ObjectId(itemID);
 
-    return await Communiting.deleteItem(itemObjectID, communityObjectID);
+    await Communiting.assertCommunityExists(communityObjectID);
+
+    return await Feeding.deleteItem(itemObjectID, communityObjectID);
   }
 
   // Favoriting
@@ -236,11 +242,18 @@ class Routes {
     return await Favoriting.unfavorite(user, oid);
   }
 
-  @Router.get("/posts/:id/favorites")
+  @Router.get("/posts/:id/favorites/")
   async getNumFavorites(id: string) {
     const oid = new ObjectId(id);
 
     return await Favoriting.getNumFavorites(oid);
+  }
+
+  @Router.get("/users/:username/favorites")
+  async getFavorites(username: string) {
+    const oid = (await Authing.getUserByUsername(username))._id;
+
+    return await Favoriting.getFavorites(oid);
   }
 
   // Featuring

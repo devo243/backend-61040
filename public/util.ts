@@ -118,14 +118,14 @@ const operations: Operation[] = [
   },
   {
     name: "Add Community items",
-    endpoint: "/api/communities/:id/items/add/:itemID",
-    method: "PATCH",
+    endpoint: "/api/communities/:id/items/",
+    method: "POST",
     fields: { id: "input", itemID: "input" },
   },
   {
     name: "Delete Community items",
     endpoint: "/api/communities/:id/items/delete/:itemID",
-    method: "PATCH",
+    method: "DELETE",
     fields: { id: "input", itemID: "input" },
   },
   {
@@ -145,6 +145,12 @@ const operations: Operation[] = [
     endpoint: "/api/posts/:id/favorites",
     method: "GET",
     fields: { id: "input" },
+  },
+  {
+    name: "Get favorite posts",
+    endpoint: "/api/users/:username/favorites",
+    method: "GET",
+    fields: { username: "input" },
   },
 
   //

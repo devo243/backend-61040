@@ -44,6 +44,12 @@ export default class FavoritingConcept {
     }
   }
 
+  async getFavorites(user: ObjectId) {
+    const favs = await this.favorites.readMany({ user: user });
+
+    return favs;
+  }
+
   async assertItemIsFavorite(user: ObjectId, item: ObjectId) {
     const favorite = await this.favorites.readOne({ user: user, item: item });
 

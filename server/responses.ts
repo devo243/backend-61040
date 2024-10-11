@@ -1,5 +1,7 @@
 import { Authing } from "./app";
-import { CommunityDoc } from "./concepts/communiting";
+import { CommunityAuthorNoMatchError, CommunityDoc, CommunityMemberExistsError, CommunityUserNoMatchError } from "./concepts/communiting";
+import { FavoriteItemExistsError, FavoriteItemNoMatchError } from "./concepts/favoriting";
+import { FeedItemExistsError, FeedItemNoMatchError } from "./concepts/feeding";
 import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError } from "./concepts/friending";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/posting";
 import { Router } from "./framework/router";
@@ -77,4 +79,37 @@ Router.registerError(FriendRequestNotFoundError, async (e) => {
 Router.registerError(AlreadyFriendsError, async (e) => {
   const [user1, user2] = await Promise.all([Authing.getUserById(e.user1), Authing.getUserById(e.user2)]);
   return e.formatWith(user1.username, user2.username);
+});
+
+Router.registerError(CommunityAuthorNoMatchError, async (e) => {
+  const username = (await Authing.getUserById(e.author)).username;
+  return e.formatWith(username, e._id);
+});
+
+Router.registerError(CommunityUserNoMatchError, async (e) => {
+  const username = (await Authing.getUserById(e.member)).username;
+  return e.formatWith(username, e._id);
+});
+
+Router.registerError(CommunityMemberExistsError, async (e) => {
+  const username = (await Authing.getUserById(e.member)).username;
+  return e.formatWith(username, e._id);
+});
+
+Router.registerError(FeedItemExistsError, async (e) => {
+  return e.formatWith(e.item, e._id);
+});
+
+Router.registerError(FeedItemNoMatchError, async (e) => {
+  return e.formatWith(e.item, e._id);
+});
+
+Router.registerError(FavoriteItemNoMatchError, async (e) => {
+  const username = (await Authing.getUserById(e.user)).username;
+  return e.formatWith(username, e.item);
+});
+
+Router.registerError(FavoriteItemExistsError, async (e) => {
+  const username = (await Authing.getUserById(e.user)).username;
+  return e.formatWith(username, e.item);
 });
