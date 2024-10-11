@@ -4,7 +4,7 @@ import DocCollection, { BaseDoc } from "../framework/doc";
 import { NotAllowedError, NotFoundError } from "./errors";
 
 export interface FeedDoc extends BaseDoc {
-  feed: ObjectId;
+  feed: ObjectId | string;
   item: ObjectId;
 }
 
@@ -30,6 +30,10 @@ export default class FeedingConcept {
 
     await this.feeds.deleteOne({ feed: feed, item: item });
     return { msg: "An item has been deleted from the community!" };
+  }
+
+  async deleteFeed(feed: ObjectId) {
+    await this.feeds.deleteMany({ feed: feed });
   }
 
   async getItems(feed: ObjectId) {

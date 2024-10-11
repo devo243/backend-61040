@@ -10,21 +10,14 @@ export interface CommunityDoc extends BaseDoc {
   members: ObjectId[];
 }
 
-export interface CommunityItemsDoc extends BaseDoc {
-  community: ObjectId;
-  item: ObjectId;
-}
-
 /**
  * concept: Communiting [User, Item]
  */
 export default class CommunitingConcept {
   public readonly communities: DocCollection<CommunityDoc>;
-  public readonly items: DocCollection<CommunityItemsDoc>;
 
   constructor(collectionName: string) {
     this.communities = new DocCollection<CommunityDoc>(collectionName);
-    this.items = new DocCollection<CommunityItemsDoc>(collectionName + "_items");
   }
 
   async create(author: ObjectId, title: string, description: string) {
@@ -38,7 +31,6 @@ export default class CommunitingConcept {
 
   async delete(_id: ObjectId) {
     await this.communities.deleteOne({ _id });
-    await this.items.deleteMany({ community: _id });
     return { msg: "Community Succesfully Deleted!" };
   }
 
@@ -69,7 +61,7 @@ export default class CommunitingConcept {
   async join(user: ObjectId, _id: ObjectId) {
     const community = await this.getCommunityByID(_id);
 
-    await this.assertUserNotInCommunity(user, _id);
+    await this.assertUserNotInCommunity(_id, user);
 
     const newMembersArray = community?.members;
     newMembersArray?.push(user);
@@ -81,7 +73,7 @@ export default class CommunitingConcept {
   async leave(user: ObjectId, _id: ObjectId) {
     const community = await this.getCommunityByID(_id);
 
-    await this.assertUserInCommunity(user, _id);
+    await this.assertUserInCommunity(_id, user);
 
     const oldMembersArray = community?.members;
     const newMembersArray = oldMembersArray?.filter((e) => e.toString() !== user.toString());
@@ -136,7 +128,7 @@ export default class CommunitingConcept {
     const members = community.members;
 
     if (this.checkObjectIdInArray(user, members)) {
-      throw new CommunityUserNoMatchError(user, _id);
+      throw new CommunityMemberExistsError(user, _id);
     }
   }
 
@@ -151,7 +143,7 @@ export default class CommunitingConcept {
   async assertCommunityExists(_id: ObjectId) {
     const community = await this.getCommunityByID(_id);
 
-    if (community) {
+    if (!community) {
       throw new NotFoundError("Community doesn't exist!");
     }
   }

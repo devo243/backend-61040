@@ -100,33 +100,33 @@ const operations: Operation[] = [
   },
   {
     name: "Join Community",
-    endpoint: "/api/communities/:id/join",
+    endpoint: "/api/communities/:cid/join",
     method: "PATCH",
-    fields: { id: "input" },
+    fields: { cid: "input" },
   },
   {
     name: "Leave Community",
     endpoint: "/api/communities/:id/leave",
     method: "PATCH",
-    fields: { id: "input" },
+    fields: { cid: "input" },
   },
   {
     name: "Get Community items",
-    endpoint: "/api/communities/:id/items",
+    endpoint: "/api/communities/:cid/items",
     method: "GET",
-    fields: { id: "input" },
+    fields: { cid: "input" },
   },
   {
     name: "Add Community items",
-    endpoint: "/api/communities/:id/items/",
+    endpoint: "/api/communities/:cid/items/",
     method: "POST",
-    fields: { id: "input", itemID: "input" },
+    fields: { cid: "input", itemID: "input" },
   },
   {
     name: "Delete Community items",
-    endpoint: "/api/communities/:id/items/delete/:itemID",
+    endpoint: "/api/communities/:cid/items/delete/:itemID",
     method: "DELETE",
-    fields: { id: "input", itemID: "input" },
+    fields: { cid: "input", itemID: "input" },
   },
   {
     name: "Favorite Post",
@@ -152,7 +152,24 @@ const operations: Operation[] = [
     method: "GET",
     fields: { username: "input" },
   },
-
+  {
+    name: "Get featured posts",
+    endpoint: "/api/posts/featured",
+    method: "GET",
+    fields: { item: "input" },
+  },
+  {
+    name: "Promote Post",
+    endpoint: "/api/posts/featured",
+    method: "POST",
+    fields: { item: "input", attention: "input" },
+  },
+  {
+    name: "Depromote Post",
+    endpoint: "/api/posts/featured/:item",
+    method: "DELETE",
+    fields: { item: "input", attention: "input" },
+  },
   //
   // ...
   //

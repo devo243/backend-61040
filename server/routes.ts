@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Authing, Communiting, Favoriting, Feeding, Friending, Posting, Sessioning } from "./app";
+import { Authing, Communiting, Favoriting, Featuring, Feeding, Friending, Posting, Sessioning } from "./app";
 import { PostOptions } from "./concepts/posting";
 import { SessionDoc } from "./concepts/sessioning";
 import Responses from "./responses";
@@ -179,6 +179,7 @@ class Routes {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
     await Communiting.assertAuthorIsUser(oid, user);
+    await Feeding.deleteFeed(oid);
     return await Communiting.delete(oid);
   }
 
@@ -258,13 +259,23 @@ class Routes {
 
   // Featuring
   @Router.get("/posts/featured")
-  async getFeatured() {}
+  async getFeatured() {
+    return await Featuring.getFeatured();
+  }
 
   @Router.post("/posts/featured")
-  async addFeatured() {}
+  async addFeatured(item: string, attention: string) {
+    const itemID = new ObjectId(item);
 
-  @Router.delete("/posts/featured")
-  async deleteFeatured() {}
+    return await Featuring.promote(itemID, +attention);
+  }
+
+  @Router.delete("/posts/featured/:item")
+  async deleteFeatured(item: string, attention: string) {
+    const itemID = new ObjectId(item);
+
+    return await Featuring.depromote(itemID, +attention);
+  }
 }
 
 /** The web app. */

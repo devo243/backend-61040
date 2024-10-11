@@ -72,7 +72,7 @@ export class FavoriteItemNoMatchError extends NotFoundError {
     public readonly user: ObjectId,
     public readonly item: ObjectId,
   ) {
-    super("{0} has not favorited item {1}", user, item);
+    super("{0} hasnot favorited item {1}", user, item);
   }
 }
 
